@@ -193,7 +193,7 @@ class PlayerViewController: UIViewController {
 
     func previousTrackTapped(_ sender: UIButton) {
         // FILL ME IN
-        if (player.currentTime() < CMTimeMake(3, 1)) {
+        if (player.currentTime() > CMTimeMake(3, 1)) {
             player.seek(to: CMTimeMake(0, 1))
         } else if currentIndex == 0 {
             print("can't go backwards, do nothing")
