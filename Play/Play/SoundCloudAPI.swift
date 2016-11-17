@@ -12,11 +12,13 @@ class SoundCloudAPI {
     func loadTracks(_ completion: (([Track]) -> Void)!) {
         let path = Bundle.main.path(forResource: "Info", ofType: "plist")
         let clientID = NSDictionary(contentsOfFile: path!)?.value(forKey: "client_id") as! String
+
         let playlistID = "143983430"
         let url = URL(string: "http://api.soundcloud.com/playlists/\(playlistID)?client_id=\(clientID)")!
 
         let session = URLSession(configuration: URLSessionConfiguration.default)
         let task = session.dataTask(with: url) {(data, response, error) -> Void in
+            print(error)
             if error == nil {
                 var tracks = [Track]()
                 do {

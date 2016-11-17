@@ -44,6 +44,7 @@ class PlayerViewController: UIViewController {
         loadPlayerButtons()
     }
 
+    
     func loadVisualElements() {
         let width = UIScreen.main.bounds.size.width
         let height = UIScreen.main.bounds.size.height
@@ -133,11 +134,32 @@ class PlayerViewController: UIViewController {
         let path = Bundle.main.path(forResource: "Info", ofType: "plist")
         let clientID = NSDictionary(contentsOfFile: path!)?.value(forKey: "client_id") as! String
         let track = tracks[currentIndex]
-        let url = URL(string: "https://api.soundcloud.com/tracks/\(track.id as Int)/stream?client_id=\(clientID)")!
+        let url = URL(string: "https://api.soundcloud.com/tracks/\(track.id as Int)/stream?client_id=\(clientID)")
         // FILL ME IN
-
+        if paused {
+            play(url: url!)
+        } else {
+            pause(url: url!)
+        }
+        paused = !paused
+        sender.isSelected = !sender.isSelected
+        loadTrackElements()
     }
-
+    
+    func play(url: URL) {
+        print("playing \(url)")
+        if (player.items().count == 0 || player.rate > 0) {
+            let item:AVPlayerItem = AVPlayerItem(url: url)
+            player.replaceCurrentItem(with: item)
+        }
+        player.play()
+      }
+    
+    func pause(url: URL) {
+        print("pausing \(url)")
+        player.pause()
+    }
+    
     /*
      * Called when the next button is tapped. It should check if there is a next
      * track, and if so it will load the next track's data and
@@ -146,6 +168,17 @@ class PlayerViewController: UIViewController {
      */
     func nextTrackTapped(_ sender: UIButton) {
         // FILL ME IN
+        print("next track tapped")
+        if (currentIndex < player.items().count && player.rate > 0) {
+            print("yas")
+            let path = Bundle.main.path(forResource: "Info", ofType: "plist")
+            let clientID = NSDictionary(contentsOfFile: path!)?.value(forKey: "client_id") as! String
+            currentIndex! += 1
+            let track = tracks[currentIndex]
+            let url = URL(string: "https://api.soundcloud.com/tracks/\(track.id as Int)/stream?client_id=\(clientID)")
+            play(url: url!)
+        }
+        loadTrackElements()
     }
 
     /*
@@ -160,6 +193,19 @@ class PlayerViewController: UIViewController {
 
     func previousTrackTapped(_ sender: UIButton) {
         // FILL ME IN
+        if (player.currentTime() < CMTimeMake(3, 1)) {
+            player.seek(to: CMTimeMake(0, 1))
+        } else if currentIndex == 0 {
+            print("can't go backwards, do nothing")
+        } else {
+            let path = Bundle.main.path(forResource: "Info", ofType: "plist")
+            let clientID = NSDictionary(contentsOfFile: path!)?.value(forKey: "client_id") as! String
+            currentIndex! -= 1
+            let track = tracks[currentIndex]
+            let url = URL(string: "https://api.soundcloud.com/tracks/\(track.id as Int)/stream?client_id=\(clientID)")
+            play(url: url!)
+        }
+        loadTrackElements()
     }
 
 
